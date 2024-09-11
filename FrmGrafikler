@@ -1,0 +1,87 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Data.SqlClient;
+
+namespace Seçim_ve_İstatislik_Uygulaması
+{
+    public partial class FrmGrafikler : Form
+    {
+        public FrmGrafikler()
+        {
+            InitializeComponent();
+        }
+        
+        SqlConnection baglanti = new SqlConnection(@"Data Source=DESKTOP-K6G2BJ2\SQLEXPRESS;Initial Catalog=Secim&Istatislik;Integrated Security=True");
+
+        private void FrmGrafikler_Load(object sender, EventArgs e)
+        {
+            // Combo Box a veri aktarımı 
+
+            baglanti.Open();
+            SqlCommand cmd = new SqlCommand("Select IlceIsim from Ilceler", baglanti);
+            SqlDataReader reader = cmd.ExecuteReader();
+
+            while (reader.Read()) 
+            {
+                comboBox1.Items.Add(reader[0]);
+            }
+            baglanti.Close();
+
+            // Grafiğe Toplam sonuç getirme
+
+            baglanti.Open();
+            SqlCommand cmd2 = new SqlCommand("select sum(AParti),sum(BParti),sum(CParti),sum(DParti),sum(EParti) from Ilceler", baglanti);
+            SqlDataReader reader2 = cmd2.ExecuteReader();
+
+            while (reader2.Read())
+            { 
+                    /* Chart Kısmına verileri ekleme */
+
+                chart1.Series["partiler"].Points.AddXY("A parti", reader2[0]);
+                chart1.Series["partiler"].Points.AddXY("B parti", reader2[1]);
+                chart1.Series["partiler"].Points.AddXY("C parti", reader2[2]);
+                chart1.Series["partiler"].Points.AddXY("D parti", reader2[3]);
+                chart1.Series["partiler"].Points.AddXY("E parti", reader2[4]);
+            }
+            baglanti.Close();
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+                // Şehir değişimine göre oyları gösterme
+
+            baglanti.Open();
+            SqlCommand sql = new SqlCommand("select * from Ilceler where IlceIsim =@p1", baglanti);
+            sql.Parameters.AddWithValue("@p1",comboBox1.Text);
+            SqlDataReader dr = sql.ExecuteReader();
+
+            while (dr.Read())
+            {
+
+                    /* Proges bara veri alma */
+
+                progressBar1.Value = int.Parse(dr[2].ToString());
+                progressBar2.Value = int.Parse(dr[3].ToString());
+                progressBar3.Value = int.Parse(dr[4].ToString());
+                progressBar4.Value = int.Parse(dr[5].ToString());
+                progressBar5.Value = int.Parse(dr[6].ToString());
+                
+                    /* Oy sayılarını yazdırma */
+
+                lbla.Text = dr[2].ToString();
+                lblb.Text = dr[3].ToString();
+                lblc.Text = dr[4].ToString();
+                lbld.Text = dr[5].ToString();
+                lble.Text = dr[6].ToString();
+            }
+            baglanti.Close();
+        }
+    }
+}
