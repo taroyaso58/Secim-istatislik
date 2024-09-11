@@ -18,7 +18,7 @@ namespace Seçim_ve_İstatislik_Uygulaması
             InitializeComponent();
         }
         
-        SqlConnection baglanti = new SqlConnection(@"Data Source=DESKTOP-K6G2BJ2\SQLEXPRESS;Initial Catalog=Secim&Istatislik;Integrated Security=True");
+        SqlConnection baglanti = new SqlConnection(@"Data Source= /* Kendi veri kaynağı ismi */ ;Initial Catalog=Secim&Istatislik;Integrated Security=True");
 
         private void FrmGrafikler_Load(object sender, EventArgs e)
         {
